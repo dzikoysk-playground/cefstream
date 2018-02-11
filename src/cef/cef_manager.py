@@ -13,6 +13,9 @@ class CefManager:
         cef.MessageLoop()
         cef.Shutdown()
 
+    def shutdown(self):
+        pass
+
     def create_browser(self, identifier):
         cef_browser = CefBrowser()
         self.browsers[identifier] = cef_browser
