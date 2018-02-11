@@ -1,2 +1,2 @@
 # cefstream
-Stream cefpython OSR paint buffer
+Stream [cefpython](https://github.com/cztomczak/cefpython) OSR paint buffer
