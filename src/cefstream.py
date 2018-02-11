@@ -11,8 +11,8 @@ class CefStream:
         self.stream_manager = StreamManager()
 
     def launch(self):
-        self.cef_manager.initialize()
         sys.excepthook = self.cef_manager.get_native_cef().ExceptHook
+        self.cef_manager.initialize()
 
 
 if __name__ == '__main__':
