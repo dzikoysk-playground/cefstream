@@ -1,22 +1,20 @@
-# Hello world example. Doesn't depend on any third party GUI framework.
-# Tested with CEF Python v55.3+.
-
 import sys
 
-from cefpython3 import cefpython as cef
+from src.cef.cef_manager import CefManager
+from src.stream.stream_manager import StreamManager
 
 
-def main():
-    sys.excepthook = cef.ExceptHook
-    cef.Initialize()
-    create_browser()
-    cef.MessageLoop()
-    cef.Shutdown()
+class CefStream:
 
+    def __init__(self):
+        self.cef_manager = CefManager()
+        self.stream_manager = StreamManager()
 
-def create_browser():
-    browser = cef.CreateBrowserSync(url="https://www.google.com/", window_title="Hello World!")
+    def launch(self):
+        self.cef_manager.initialize()
+        sys.excepthook = self.cef_manager.get_native_cef().ExceptHook
 
 
 if __name__ == '__main__':
-    main()
+    cef_stream = CefStream()
+    cef_stream.launch()
