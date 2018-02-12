@@ -1,3 +1,4 @@
+import sys
 import getopt
 
 from socket import *
@@ -5,12 +6,15 @@ from socket import *
 
 class StreamManager:
 
-    def __init__(self):
+    def __init__(self, cefstream):
+        self.cefstream = cefstream
         self.socket = None
 
     def launch(self):
+        port = self.get_port()
+        print('[cefstream] Streaming Socket *::{port}'.format(port=port))
         self.socket = socket(AF_INET, SOCK_STREAM)
-        self.socket.bind(('', self.get_port()))
+        self.socket.bind(('', port))
         self.socket.listen(5)
 
     def shutdown(self):
@@ -21,8 +25,10 @@ class StreamManager:
         try:
             opts, args = getopt.getopt(sys.argv, "hg:d:")
         except getopt.GetoptError:
-            print('Invalid arguments')
+            print('[cefstream] Invalid arguments')
             sys.exit(2)
         for opt, arg in opts:
             if opt in '-p':
                 return arg
+        print('[cefstream] Using default port number (*::10000)')
+        return 10000
