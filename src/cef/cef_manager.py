@@ -11,33 +11,30 @@ class CefManager:
     def __init__(self, cefstream):
         self.cefstream = cefstream
         self.browsers = dict()
+        self.fps_period = 1
         self.running = True
 
     def launch(self):
         self.check_versions()
 
-        print('[cefstream] Initializing CEF')
+        self.cefstream.get_logger().info('Initializing CEF')
         cef.Initialize()
+        self.set_fps(60)
 
-        # self.create_browser(identifier='dzikoysk.net', url='https://dzikoysk.net/')
-        self.create_browser(identifier='localhost', url='http://localhost/')
-        self.keep_alive()
-
-    def keep_alive(self):
-        keep_alive_thread = Thread(target=self.message_loop())
-        keep_alive_thread.start()
+        self.create_browser(identifier='dzikoysk.net', url='https://dzikoysk.net/')
+        self.message_loop()
 
     def message_loop(self):
-        print("[cefstream] Calling message loop")
+        self.cefstream.get_logger().info("Calling message loop")
 
         while self.running:
             cef.MessageLoopWork()
-            sleep(0.017)
+            sleep(self.fps_period)
 
         self.shutdown_cef()
 
     def shutdown_cef(self):
-        print("Shutting down CEF")
+        self.cefstream.get_logger().info("Shutting down CEF")
         self.shutdown()
         cef.Shutdown()
 
@@ -45,17 +42,20 @@ class CefManager:
         self.running = False
 
     def create_browser(self, identifier, url):
-        cef_browser = CefBrowser(url=url)
+        cef_browser = CefBrowser(manager=self, identifier=identifier, url=url)
         self.browsers[identifier] = cef_browser
         return cef_browser
+
+    def set_fps(self, fps):
+        self.fps_period = 1.0 / float(fps)
+        self.cefstream.get_logger().info("FPS period updated to {fps_period} ({fps}fps)".format(fps_period=self.fps_period, fps=fps))
 
     def get_browser(self, identifier):
         return self.browsers[identifier]
 
-    @staticmethod
-    def check_versions():
-        print("[cefstream] CEF Python {ver}".format(ver=cef.__version__))
-        print("[cefstream] Python {ver} {arch}".format(ver=platform.python_version(), arch=platform.architecture()[0]))
+    def check_versions(self):
+        self.cefstream.get_logger().info("CEF Python {ver}".format(ver=cef.__version__))
+        self.cefstream.get_logger().info("Python {ver} {arch}".format(ver=platform.python_version(), arch=platform.architecture()[0]))
         assert cef.__version__ >= "55.3", "CEF Python v55.3+ required to run this"
 
     @staticmethod
@@ -65,5 +65,7 @@ class CefManager:
 
 class CefBrowser:
 
-    def __init__(self, url):
-        self.nativeBrowser = cef.CreateBrowserSync(url=url)
+    def __init__(self, manager, identifier, url):
+        self.manager = manager
+        self.identifier = identifier
+        self.nativeBrowser = cef.CreateBrowserSync(window_title="cefstream - " + identifier, url=url)
