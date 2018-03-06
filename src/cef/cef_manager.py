@@ -15,8 +15,12 @@ class CefManager:
 
     def launch(self):
         self.check_versions()
+
+        print('[cefstream] Initializing CEF')
         cef.Initialize()
-        self.create_browser(identifier='dzikoysk.net', url='https://dzikoysk.net/')
+
+        # self.create_browser(identifier='dzikoysk.net', url='https://dzikoysk.net/')
+        self.create_browser(identifier='localhost', url='http://localhost/')
         self.keep_alive()
 
     def keep_alive(self):
@@ -24,9 +28,17 @@ class CefManager:
         keep_alive_thread.start()
 
     def message_loop(self):
+        print("[cefstream] Calling message loop")
+
         while self.running:
             cef.MessageLoopWork()
             sleep(0.017)
+
+        self.shutdown_cef()
+
+    def shutdown_cef(self):
+        print("Shutting down CEF")
+        self.shutdown()
         cef.Shutdown()
 
     def shutdown(self):

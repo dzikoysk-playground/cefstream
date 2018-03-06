@@ -1,4 +1,4 @@
-import sys
+import sys, atexit
 
 from threading import Thread
 from multiprocessing import Pool
@@ -14,13 +14,15 @@ class CefStream:
         self.stream_manager = StreamManager(self)
 
     def launch(self):
+        atexit.register(self.shutdown)
         sys.excepthook = self.cef_manager.get_native_cef().ExceptHook
-        cef_thread = Thread(target=self.cef_manager.launch())
-        stream_thread = Thread(target=self.stream_manager.launch())
+        cef_thread = Thread(target=self.cef_manager.launch)
+        stream_thread = Thread(target=self.stream_manager.launch)
         cef_thread.start()
         stream_thread.start()
 
     def shutdown(self):
+        print("Shutting down")
         self.stream_manager.shutdown()
         self.cef_manager.shutdown()
         sys.exit(0)

@@ -1,5 +1,4 @@
-import sys
-import getopt
+import sys, getopt
 
 from socket import *
 
@@ -13,9 +12,12 @@ class StreamManager:
     def launch(self):
         port = self.get_port()
         print('[cefstream] Streaming Socket *::{port}'.format(port=port))
-        self.socket = socket(AF_INET, SOCK_STREAM)
+        self.socket = socket(AF_INET, SOCK_DGRAM)
         self.socket.bind(('', port))
-        self.socket.listen(5)
+
+    def listen(self):
+        while True:
+            message, address = self.socket.recvfrom(1024)
 
     def shutdown(self):
         self.socket.close()
