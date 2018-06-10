@@ -1,9 +1,7 @@
 import platform
-import threading
-from cefpython3 import cefpython as cef
-from threading import Thread
-from multiprocessing import Pool
+
 from time import sleep
+from cefpython3 import cefpython as cef
 
 
 class CefManager:

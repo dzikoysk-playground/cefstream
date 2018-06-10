@@ -1,5 +1,3 @@
-import sys
-import getopt
 from socket import *
 
 
@@ -10,27 +8,36 @@ class StreamManager:
         self.socket = None
 
     def launch(self):
-        port = self.get_port()
+        port = self.cefstream.get_port()
         self.cefstream.get_logger().info('Streaming Socket *::{port}'.format(port=port))
+
         self.socket = socket(AF_INET, SOCK_DGRAM)
-        self.socket.bind(('', port))
+        self.socket.bind(('0.0.0.0', port))
 
     def listen(self):
+        packets = vars()['ServerboundPacket'].__subclasses__()
+
         while True:
-            message, address = self.socket.recvfrom(1024)
-            self.cefstream.get_logger().info("Message: " + message)
+            packet_id = self.socket.recvfrom(1)
+            received_packet_class = None
+
+            for packet in packets:
+                if packet.get_packet_id() in packet_id:
+                    received_packet_class = packet
+                    break
+
+            if received_packet_class in None:
+                self.cefstream.get_logger().warn("Unknown packet " + packet_id)
+                continue
+
+            packet = received_packet_class()
+            packet.receive(self.cefstream, self.socket)
+
+            self.cefstream.get_logger().info("Message: " + packet_id)
+
+    def send(self, packet):
+        packet.send(self)
+        return True
 
     def shutdown(self):
         self.socket.close()
-
-    def get_port(self):
-        try:
-            opts, args = getopt.getopt(sys.argv, "hg:d:")
-        except getopt.GetoptError:
-            self.cefstream.get_logger().info('Invalid arguments')
-            sys.exit(2)
-        for opt, arg in opts:
-            if opt in '-p':
-                return arg
-        self.cefstream.get_logger().info('Using default port number (*::10000)')
-        return 10000

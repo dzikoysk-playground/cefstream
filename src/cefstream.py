@@ -1,5 +1,6 @@
 import atexit
 import sys
+import getopt
 import logging
 from threading import Thread
 from src.cef.cef_manager import CefManager
@@ -30,6 +31,26 @@ class CefStream:
         self.stream_manager.shutdown()
         self.cef_manager.shutdown()
         sys.exit(0)
+
+    def get_port(self):
+        try:
+            opts, args = getopt.getopt(sys.argv, "hg:d:")
+        except getopt.GetoptError:
+            self.get_logger().info('Invalid arguments')
+            sys.exit(2)
+
+        for opt, arg in opts:
+            if opt in '-p':
+                return arg
+
+        self.get_logger().info('Using default port number (*::10000)')
+        return 10000
+
+    def get_cef_manager(self):
+        return self.cef_manager
+
+    def get_stream_manager(self):
+        return self.stream_manager
 
     @staticmethod
     def get_logger():
