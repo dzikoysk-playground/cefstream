@@ -1,5 +1,7 @@
 from enum import Enum
 
+from overrides import overrides
+
 
 class Packet:
 
@@ -10,11 +12,11 @@ class Packet:
         pass
 
     @staticmethod
-    def get_bound(self):
+    def get_bound():
         pass
 
     @staticmethod
-    def get_packet_id(self):
+    def get_packet_id():
         pass
 
 
@@ -27,12 +29,14 @@ class Bound(Enum):
 class ServerboundPacket(Packet):
 
     @staticmethod
-    def get_bound(self):
+    @overrides
+    def get_bound():
         return Bound.SERVER_BOUND
 
 
 class ClientboundPacket(Packet):
 
     @staticmethod
-    def get_bound(self):
+    @overrides
+    def get_bound():
         return Bound.CLIENT_BOUND
