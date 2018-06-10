@@ -17,39 +17,25 @@ class StreamManager:
         port = self.cefstream.get_port()
         self.cefstream.get_logger().info('Streaming Socket *::{port}'.format(port=port))
 
-        self.server = socket(AF_INET, SOCK_STREAM)
-        self.server.setsockopt(SOL_SOCKET, SO_SNDBUF, 1024 * 1024 * 8)
-        self.server.bind(('0.0.0.0', port))
-        self.server.listen(5)
+        self.server = socket(AF_INET, SOCK_DGRAM)
+        self.server.bind(('127.0.0.1', port))
         self.listen()
 
     def listen(self):
-        client, address = self.server.accept()
+        data, address = self.server.recvfrom(1024)
         self.cefstream.get_logger().info('Connection: {address}'.format(address=str(address)))
 
-        client_thread = Thread(target=self.listen_client, args=(self, client, address), name='ClientThread::{address}'.format(address=str(address)))
+        client_thread = Thread(target=self.listen_client, args=(self, address), name='ClientThread::{address}'.format(address=str(address)))
         client_thread.start()
 
-        self.client = client
+        self.client = address
         self.cefstream.get_logger().info('Listening for packets')
 
-        while True:
-            if len(self.packets) == 0:
-                continue
-
-            self.cefstream.get_logger().info('Packets: {size}'.format(size=len(self.packets)))
-
-            for packet in self.packets:
-                client.send(pack('!i', packet.get_packet_id().value))
-                packet.send(self.cefstream, client)
-
-            self.packets.clear()
-
-    def listen_client(self, stream_manager, client, address):
+    def listen_client(self, stream_manager, address):
         packets = ServerboundPacket.__subclasses__()
 
         while True:
-            packet_id = client.recvfrom(1)
+            packet_id = self.server.recvfrom(1)
             received_packet_class = None
 
             for packet in packets:
@@ -70,7 +56,7 @@ class StreamManager:
         if self.client is None:
             return
 
-        self.packets.append(packet)
+        # packet.send(self.cefstream, self.server, self.client)
 
     def shutdown(self):
         self.server.close()

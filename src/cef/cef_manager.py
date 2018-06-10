@@ -17,11 +17,14 @@ class CefManager:
 
     def launch(self):
         self.check_versions()
-
         self.cefstream.get_logger().info('Initializing CEF')
-        cef.Initialize(settings={"windowless_rendering_enabled": True})
-        self.set_fps(60)
 
+        settings = {
+            "windowless_rendering_enabled": True
+        }
+        cef.Initialize(settings=settings)
+
+        self.set_fps(55)
         self.create_browser(identifier='dzikoysk.net', url='https://google.com/')
         self.message_loop()
 
@@ -30,9 +33,6 @@ class CefManager:
 
         while self.running:
             cef.MessageLoopWork()
-
-            packet = FrameClientboundPacket(self.browser.get_buffer_string())
-            self.cefstream.get_stream_manager().send(packet)
 
         self.shutdown_cef()
 
@@ -72,7 +72,7 @@ class CefBrowser:
         window_info.SetAsOffscreen(0)
 
         browser_settings = {
-            "windowless_frame_rate": 60
+            "windowless_frame_rate": 55
         }
 
         self.nativeBrowser = cef.CreateBrowserSync(window_info=window_info, window_title="cefstream - " + identifier, url=url, settings=browser_settings)

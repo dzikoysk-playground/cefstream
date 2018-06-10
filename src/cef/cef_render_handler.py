@@ -17,7 +17,7 @@ class RenderHandler:
 
 class CefRenderHandler(RenderHandler):
 
-    viewport_size = (1920, 1080)
+    viewport_size = (1600, 900)
 
     def __init__(self, cefstream, cef_manager):
         self.cefstream = cefstream
@@ -31,10 +31,8 @@ class CefRenderHandler(RenderHandler):
 
     @overrides
     def OnPaint(self, browser, element_type, paint_buffer, **_):
-        self.cefstream.get_logger().info('OnPaint')
-
         if element_type == cef.PET_VIEW:
-            buffer_string = paint_buffer.GetString(mode="rgba", origin="top-left")
-            browser.SetUserData("OnPaint.buffer_string", buffer_string)
+            packet = FrameClientboundPacket(paint_buffer.GetString(mode="bgra", origin="top-left"))
+            self.cefstream.get_stream_manager().send(packet)
         else:
             raise Exception("Unsupported element_type in OnPaint")

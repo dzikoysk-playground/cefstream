@@ -11,9 +11,11 @@ class FrameClientboundPacket(ClientboundPacket):
         self.buffer_string = buffer_string
 
     @overrides
-    def send(self, cefstream, socket):
-        socket.send(pack('!I', len(self.buffer_string)))
-        socket.send(self.buffer_string)
+    def send(self, cefstream, server, client):
+        response = pack('!I', self.get_packet_id().value)
+        response += pack('!I', len(self.buffer_string))
+        response += self.buffer_string
+        server.sendto(response, client)
 
     @staticmethod
     @overrides

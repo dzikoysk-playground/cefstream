@@ -5,10 +5,10 @@ from overrides import overrides
 
 class Packet:
 
-    def send(self, cefstream, socket):
+    def send(self, cefstream, server, client):
         pass
 
-    def receive(self, cefstream, socket):
+    def receive(self, cefstream, server, client):
         pass
 
     @staticmethod
