@@ -79,6 +79,3 @@ class CefBrowser:
         self.nativeBrowser.SetClientHandler(CefRenderHandler(manager.cefstream, self))
         self.nativeBrowser.SendFocusEvent(True)
         self.nativeBrowser.WasResized()
-
-    def get_buffer_string(self):
-        return self.nativeBrowser.GetUserData("OnPaint.buffer_string")

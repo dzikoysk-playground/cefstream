@@ -2,6 +2,7 @@ import atexit
 import sys
 import getopt
 import logging
+
 from threading import Thread
 from src.cef.cef_manager import CefManager
 from src.stream.stream_manager import StreamManager

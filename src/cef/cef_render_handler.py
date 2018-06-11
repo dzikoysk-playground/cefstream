@@ -34,5 +34,6 @@ class CefRenderHandler(RenderHandler):
         if element_type == cef.PET_VIEW:
             packet = FrameClientboundPacket(paint_buffer.GetString(mode="bgra", origin="top-left"))
             self.cefstream.get_stream_manager().send(packet)
+            return True
         else:
             raise Exception("Unsupported element_type in OnPaint")
