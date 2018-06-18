@@ -1,10 +1,7 @@
 import platform
 
-from time import sleep
 from cefpython3 import cefpython as cef
-
 from src.cef.cef_render_handler import CefRenderHandler
-from src.stream.protocol.clientbound.frame_clientbound_packet import FrameClientboundPacket
 
 
 class CefManager:
