@@ -32,6 +32,9 @@ def create_window():
 #   CPU ~ 40/50%
 #   Memory ~150MB
 #
+# Extra:
+#   Parameters: --disable-gpu --disable-gpu-compositing --enable-begin-frame-scheduling
+#
 if __name__ == '__main__':
     # Launch cef
     sys.excepthook = cef.ExceptHook
