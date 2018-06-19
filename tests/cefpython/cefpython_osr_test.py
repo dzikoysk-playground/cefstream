@@ -30,6 +30,7 @@ def create_window():
 #
 # Stats:
 #   CPU ~ 40/50%
+#   Memory ~150MB
 #
 if __name__ == '__main__':
     # Launch cef
